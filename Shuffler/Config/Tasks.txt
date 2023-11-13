@@ -1,0 +1,11 @@
+Entryway
+C Hall
+T Hall
+Laundry Room
+Lounge
+East Hall
+East Hall Bathroom
+West Hall
+West Hall Bathroom
+Showers
+Showers

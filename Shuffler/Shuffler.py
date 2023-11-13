@@ -26,8 +26,8 @@ def assign_tasks(tasks):
     for person in assigned:
         task = tasks[cycle]
         person = person.split()
-        to_print += '{} {} - {}\n'.format(person[0], person[1], task)
-        file_write += '{} {} 0\n'.format(person[0], person[1])
+        to_print += '{} - {}\n'.format(person[:-1], task)
+        file_write += '{} 0\n'.format(person[:-1])
         cycle += 1
 
     for person in unassigned:

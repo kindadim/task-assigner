@@ -43,8 +43,8 @@ def write_to_file(filename):
     return
 
 
-assign_people('Titles.txt', 5)
+assign_people('Shuffler/Config/Titles.txt', 5)
 assign_tasks(['Sweeping', 'Garbage', 'Surfaces', 'Vacuuming', 'Bathroom'])
-write_to_file('Titles.txt')
+write_to_file('Shuffler/Config/Titles.txt')
 
 print(to_print)

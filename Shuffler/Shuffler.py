@@ -1,47 +1,56 @@
 import random
 
-def assign_tasks(task_file, title_file):
-    assigned = [] # List of people to be assigned tasks
-    unassigned = [] # List of people not assigned tasks
-    titles = [] # List of titles - shuffled and sorted
-    tasks = [] # List of tasks - shuffled
-    to_zip = ''
+
+def read_file(file_name):
+    with open(file_name, 'r') as file:
+        file_list = []
+        line_count = 0
+        for line in file:
+            read_list = line.splitlines()
+            read_list = [x for x in read_list if x]
+            file_list += read_list
+            line_count += 1
+            continue
+    return file_list, line_count
+# Returns file_list and line_count
+def shuffler(file_list):
+    random.shuffle(file_list)
+    return file_list
+# Returns shuffled file_list
+def task_list(task_file):
+    tasks, task_count = shuffler(read_file(task_file)[0]), (read_file(task_file)[1])
+    return tasks, task_count
+# Returns tasks and task_count
+def title_list(title_file):
+    titles = shuffler(read_file(title_file)[0])
+    titles.sort(reverse=True, key=lambda v: v.split()[-1]) # Orders titles by integer
+    return titles
+# Returns titles
+def zipper(titles, tasks, task_count):
     to_file = ''
-    to_print = ''
-    task_count = 0 # Number of tasks
-    
-    with open(task_file, 'r') as taskfile: # Opens task_file
-        for task in taskfile: # Iterates through each line
-            tasks += task.split('\n') # Splits list by new line
-            tasks = [x for x in tasks if x] # Removes empty strings
-            random.shuffle(tasks) # Shuffles tasks to prevent bias
-            task_count += 1 # Counts the tasks iterated through
-            continue
-    
-    with open(title_file, 'r') as titlefile: # Opens title_file
-        for title in titlefile: # Iterates through each line
-            titles += title.splitlines() # Splits list by new line
-            titles = [x for x in titles if x] # Removes empty strings
-            random.shuffle(titles) # Shuffles titles to prevent bias
-            titles.sort(reverse=True, key=lambda v: v.split()[-1]) # Orders titles by integer
-            continue
+    assigned = zip(titles, tasks)
+    for title, task in assigned:
+        name = title[:-2]
+        print(f'{name} - {task}')
+        to_file += (f'{name} 0\n')
+        continue
+    unassigned = titles[task_count:]
+    for title in unassigned:
+        name, weight = title[:-2], int(title[-1])
+        weight = weight + 1
+        to_file += (f'{name} {weight}\n')
+        continue
+    return to_file
+# Prints readable data, returns data to be written to file
+def file_updater(title_file, to_file):
+    with open(title_file, 'w') as file:
+        file.write(to_file)
+    return
 
-        assigned += titles[:task_count] # Splits titles by who will be assigned
-        for person in assigned:
-            person = person[:-1] # Removes the integer
-            to_file += str(person) + '0\n' # Resets the integer to send to file
-            to_print += str(person)
-        
-        zipped_list = list(zip(assigned, tasks))
-        
-        unassigned += titles[task_count:]
-        for person in unassigned:
-            oldtime = person[-1]
-            newtime = int(oldtime) + 1
-            person = person[:-1] + str(newtime)
-            to_file += str(person) + '\n'
-            continue
+task_file = 'Shuffler/Config/Tasks.txt'
+title_file = 'Shuffler/Config/Titles.txt'
+#print(task_list(task_file)) # For troubleshooting
+#print(title_list(title_file)) # For troubleshooting
+#zipper(title_list(title_file), task_list(task_file)[0], task_list(task_file)[1]) # For troubleshooting
 
-    return zipped_list
-    
-print(assign_tasks('Shuffler/Config/Tasks.txt', 'Shuffler/Config/Titles.txt')) # prints and assigns filenames
+file_updater(title_file, zipper(title_list(title_file), task_list(task_file)[0], task_list(task_file)[1]))

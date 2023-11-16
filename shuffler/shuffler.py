@@ -1,5 +1,6 @@
 """Shuffle randomizes lists"""
 from random import shuffle
+import sys
 
 
 def read_file(file_name):
@@ -20,6 +21,23 @@ def shuffler(file_list):
     shuffle(file_list)
     return file_list
 
+def format_check(title_file):
+    """Ensures that the lines of title_file follow correct format"""
+    titles = read_file(title_file)[0]
+    for line in titles:
+        new = line.split(',')
+        if len(new) > 2:
+            print('Format incorrect: Additional values.')
+            print('Correct format: <name>, <weight>')
+            print(f'Provided format: {line}')
+            sys.exit()
+        elif len(new) <= 1:
+            print('Format incorrect: Missing values.')
+            print('Correct format: <name>, <weight>')
+            print(f'Provided format: {line}')
+        else:
+            continue
+
 def task_list(task_file):
     """Uses read_file() and shuffler() on task_file"""
     tasks, task_count = shuffler(read_file(task_file)[0]), (read_file(task_file)[1])
@@ -27,6 +45,7 @@ def task_list(task_file):
 
 def title_list(title_file):
     """Uses read_file() and shuffler() on title_file, orders titles by weight"""
+    format_check(title_file)
     titles = shuffler(read_file(title_file)[0])
     titles.sort(reverse=True, key=lambda v: v.split()[-1])
     return titles

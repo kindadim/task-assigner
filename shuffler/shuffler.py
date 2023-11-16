@@ -22,7 +22,7 @@ def shuffler(file_list):
     return file_list
 
 def format_check(title_file):
-    """Ensures that the lines of title_file follow correct format"""
+    """Ensures that the lines of title_file follow the correct format"""
     titles = read_file(title_file)[0]
     for line in titles:
         new = line.split(',')
@@ -31,10 +31,11 @@ def format_check(title_file):
             print('Correct format: <name>, <weight>')
             print(f'Provided format: {line}')
             sys.exit()
-        elif len(new) <= 1:
+        elif len(new) < 2:
             print('Format incorrect: Missing values.')
             print('Correct format: <name>, <weight>')
             print(f'Provided format: {line}')
+            sys.exit()
         else:
             continue
 

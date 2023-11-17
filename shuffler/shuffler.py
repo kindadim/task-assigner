@@ -32,8 +32,8 @@ def format_check(title_file):
             print(f'Provided format: {line}')
             sys.exit()
         elif len(new) < 2:
-            print('Format incorrect: Missing values.')
-            print('Correct format: <name>, <weight>')
+            print('Format incorrect: Missing values.'
+                  'Correct format: <name>, <weight>')
             print(f'Provided format: {line}')
             sys.exit()
         else:
@@ -48,8 +48,35 @@ def title_list(title_file):
     """Uses read_file() and shuffler() on title_file, orders titles by weight"""
     format_check(title_file)
     titles = shuffler(read_file(title_file)[0])
+
     titles.sort(reverse=True, key=lambda v: v.split()[-1])
     return titles
+
+def unavailable(title_file):
+    """Allows an input for people that will be unavailable"""
+    ua_list = ''
+    ticker = 0
+    titles = read_file(title_file)[0]
+    while ticker < 2:
+        ua = input('Input the name of an unavailable person. If none, press ENTER: ')
+        if ua != '':
+            for title in titles:
+                name = str(title).split(',', maxsplit=1)[0]
+                if ua == name:
+                    print(f'{ua} is unavailable.')
+                    ua_list += (f'{name}, ')
+        if ua == '':
+            if ua_list == '':
+                print('All available.'
+                      'Continuing assignment...\n\n'
+                      '-=-=- Chore Roster -=-=-')
+            else:
+                print(f'Absences: {ua_list[:-2]}.\n'
+                       'Continuing assignment...\n\n'
+                       '-=-=- Chore Roster -=-=-')
+            ticker += 2
+        ua = ''
+    return ua_list
 
 def zipper(titles, tasks, task_count):
     """Zips titles/tasks, resets/adds weight, refactors titles"""
@@ -69,14 +96,18 @@ def zipper(titles, tasks, task_count):
         continue
     return to_file
 
-def file_updater(title_file, task_file):
+def main(title_file, task_file):
     """Writes to_file to title_file"""
-    to_file = zipper(title_list(title_file), task_list(task_file)[0], task_list(task_file)[1])
+    unavailable(title_file)
+    to_file = zipper(
+                    title_list(title_file),
+                    task_list(task_file)[0],
+                    task_list(task_file)[1])
     with open(title_file, 'w', encoding='utf-8') as file:
         file.write(to_file)
 
 
-file_updater(
+main(
     'shuffler/config/titles.txt',
     # File containing name and assignment weight
     'shuffler/config/tasks.txt')

@@ -48,7 +48,6 @@ def title_list(title_file):
     """Uses read_file() and shuffler() on title_file, orders titles by weight"""
     format_check(title_file)
     titles = shuffler(read_file(title_file)[0])
-
     titles.sort(reverse=True, key=lambda v: v.split()[-1])
     return titles
 

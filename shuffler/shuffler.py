@@ -3,7 +3,7 @@ from random import shuffle
 import sys
 
 
-def read_file(file_name):
+def read_files(file_name):
     """Opens file, returns list of lines and line count"""
     with open(file_name, 'r', encoding='utf-8') as file:
         file_list = []
@@ -23,7 +23,7 @@ def shuffler(file_list):
 
 def format_check(title_file):
     """Ensures that the lines of title_file follow the correct format"""
-    titles = read_file(title_file)[0]
+    titles = read_files(title_file)[0]
     for line in titles:
         new = line.split(',')
         if len(new) > 2:
@@ -41,22 +41,22 @@ def format_check(title_file):
 
 def task_list(task_file):
     """Uses read_file() and shuffler() on task_file"""
-    tasks, task_count = shuffler(read_file(task_file)[0]), (read_file(task_file)[1])
+    tasks, task_count = shuffler(read_files(task_file)[0]), (read_files(task_file)[1])
     return tasks, task_count
 
 def title_list(title_file):
     """Uses read_file() and shuffler() on title_file, orders titles by weight"""
     format_check(title_file)
-    titles = shuffler(read_file(title_file)[0])
+    titles = shuffler(read_files(title_file)[0])
 
     titles.sort(reverse=True, key=lambda v: v.split()[-1])
     return titles
 
-def unavailable(title_file):
+def unavailable_people(title_file):
     """Allows an input for people that will be unavailable"""
     ua_list = ''
     ticker = 0
-    titles = read_file(title_file)[0]
+    titles = read_files(title_file)[0]
     while ticker < 2:
         ua = input('Input the name of an unavailable person. If none, press ENTER: ')
         if ua != '':
@@ -64,10 +64,10 @@ def unavailable(title_file):
                 name = str(title).split(',', maxsplit=1)[0]
                 if ua == name:
                     print(f'{ua} is unavailable.')
-                    ua_list += (f'{name}, ')
-        if ua == '':
+                    ua_list += f'{name}, '
+        elif ua == '':
             if ua_list == '':
-                print('All available.'
+                print('All available. '
                       'Continuing assignment...\n\n'
                       '-=-=- Chore Roster -=-=-')
             else:
@@ -75,7 +75,6 @@ def unavailable(title_file):
                        'Continuing assignment...\n\n'
                        '-=-=- Chore Roster -=-=-')
             ticker += 2
-        ua = ''
     return ua_list
 
 def zipper(titles, tasks, task_count):
@@ -86,29 +85,22 @@ def zipper(titles, tasks, task_count):
         name = title.split(',')[0]
         name = str(name.replace('[', '').replace(']', '').replace('\'', ''))
         print(f'{name} - {task}')
-        to_file += (f'{name}, 0\n')
+        to_file += f'{name}, 0\n'
         continue
     unassigned = titles[task_count:]
     for title in unassigned:
         name, weight = title.split(',')[0], title.split(',')[1]
         weight = int(weight) + 1
-        to_file += (f'{name}, {weight}\n')
+        to_file += f'{name}, {weight}\n'
         continue
     return to_file
 
-def main(title_file, task_file):
+def assign(title_file, task_file):
     """Writes to_file to title_file"""
-    unavailable(title_file)
+    unavailable_people(title_file)
     to_file = zipper(
                     title_list(title_file),
                     task_list(task_file)[0],
                     task_list(task_file)[1])
     with open(title_file, 'w', encoding='utf-8') as file:
         file.write(to_file)
-
-
-main(
-    'shuffler/config/titles.txt',
-    # File containing name and assignment weight
-    'shuffler/config/tasks.txt')
-    # File containing list of tasks
